@@ -1,7 +1,11 @@
 from queue import Queue
 
 
-def breadth_first_search(graph: dict[str|int, list[str|int]], start_node: str|int, destination_node: str|int) -> bool:
+
+def breadth_first_search(*,
+                         graph: dict[str | int, list[str | int]],
+                         start_node: str | int,
+                         destination_node: str | int) -> bool:
 
     """Uses Queue to go through graph. Graph should be passed in as adjacency list."""
 
@@ -26,6 +30,6 @@ def breadth_first_search(graph: dict[str|int, list[str|int]], start_node: str|in
             # checking if nodes where visited, in this case enqueing does not happen.
             if neighbor not in visited_nodes:
                 queued_nodes.put(neighbor)
-        
+
     return False
 
