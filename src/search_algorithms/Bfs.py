@@ -1,6 +1,6 @@
 
-from src.separated.Settings.settings import BLOCKSIZE, HEIGHT, WIDTH
-from src.separated.search_algorithms.Algorithms import Algorithms
+from src.Settings.settings import BLOCKSIZE, HEIGHT, WIDTH
+from src.search_algorithms.Algorithms_ABC import Algorithms
 from queue import Queue
 
 

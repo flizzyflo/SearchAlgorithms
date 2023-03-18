@@ -1,5 +1,5 @@
 import pygame
-from src.separated.Settings.settings import *
+from src.Settings.settings import *
 
 class Map:
 

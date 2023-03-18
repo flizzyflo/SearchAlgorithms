@@ -1,22 +1,16 @@
-from bfs.breadth_first_search import breadth_first_search
-from dfs.depth_first_search import depth_first_search, depth_first_search_rec
+from src.Map.Map import Map
+from src.UserInterface.UserInterface import Window
+from src.search_algorithms.Bfs import Bfs
 
-graph = {
-        "a": ["b", "c"],
-        "b": ["a", "d"],
-        "c": ["a"],
-        "d": ["e"],
-        "e": [],
-        "f": ["b"]
-        }
+if __name__ == '__main__':
 
-print(breadth_first_search(graph= graph, 
-                           start_node= "a", 
-                           destination_node= "e"))
+    m = Map()
+    b = Bfs(map=m)
 
-print(depth_first_search(graph= graph, 
-                         start_node= "a", 
-                         destination_node= "e"))
+    w = Window(block_map=m,
+               search_algorithm=b)
+
+    while True:
+        w.run()
 
 
-print(depth_first_search_rec(graph, "a", "e"))

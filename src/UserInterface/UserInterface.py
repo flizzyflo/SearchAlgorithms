@@ -3,9 +3,9 @@ import sys
 import pygame as pg
 import pygame.time
 
-from src.separated.Map.Map import Map
-from src.separated.Settings.settings import *
-from src.separated.search_algorithms.Algorithms import Algorithms
+from src.Map.Map import Map
+from src.Settings.settings import *
+from src.search_algorithms.Algorithms_ABC import Algorithms
 
 
 class Window:
