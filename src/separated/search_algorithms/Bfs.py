@@ -13,6 +13,8 @@ class Bfs(Algorithms):
         self.goal_coordinates: tuple[int, int] = (0, 0)
         self.current_coordinates: tuple[int, int] = self.start_coordinates
         self.goal_found: bool = False
+        self.no_way: bool = False
+        self.visited: set[tuple[int, int]] = set()
 
     def initialize_start_coordinates(self, start_coordinates: tuple[int, int]):
         self.start_coordinates = start_coordinates
@@ -21,9 +23,18 @@ class Bfs(Algorithms):
     def initialize_goal_coordinates(self, goal_coordinates: tuple[int, int]):
         self.goal_coordinates = goal_coordinates
 
+    def no_way_exists(self) -> bool:
+        return self.no_way
+
     def perform_search(self):
         cur_x, cur_y = self.queue.get()
         self.current_coordinates = (cur_x, cur_y)
+
+        if self.queue.empty():
+            self.no_way = True
+
+        if self.current_coordinates in self.visited:
+            return
 
        # case: goal reached
         if self.goal_detected(block_coordinates=self.current_coordinates):
@@ -44,6 +55,7 @@ class Bfs(Algorithms):
         if self.is_valid_coordinate(block_coordinates=(cur_x, cur_y + BLOCKSIZE)):
             self.queue.put((cur_x, cur_y + BLOCKSIZE))
 
+        self.visited.add(self.current_coordinates)
         self.map.final_map[self.current_coordinates] = 3
 
     def get_current_coordinates(self) -> tuple[int, int]:

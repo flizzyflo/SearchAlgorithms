@@ -10,6 +10,5 @@ if __name__ == '__main__':
     w = Window(block_map=m,
                search_algorithm=b)
 
-
     while True:
         w.run()

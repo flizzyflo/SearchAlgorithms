@@ -23,6 +23,7 @@ class Window:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.clock.tick(FRAMERATE)
         self.initialized: bool = False
+        self.no_way: bool = self.search_algorithm.no_way_exists()
 
     def draw(self):
         self.screen.fill(color=BACKGROUND_COLOR)
@@ -36,7 +37,6 @@ class Window:
 
             if event.type == pg.KEYDOWN:
                 self.start = True
-                print(self.start)
 
             # left click
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -85,7 +85,6 @@ class Window:
 
             # right click
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
-                print(tuple(self.block_map.get_start_end_points()))
                 x, y = pg.mouse.get_pos()
                 x = (x // BLOCKSIZE) * BLOCKSIZE
                 y = (y // BLOCKSIZE) * BLOCKSIZE
@@ -120,9 +119,11 @@ class Window:
 
         elif self.initialized:
             self.search_algorithm.perform_search()
-            if self.search_algorithm.goal_found:
-                print("gefunden")
-                return
 
+        if self.search_algorithm.goal_found:
+            return
 
+        if self.search_algorithm.no_way_exists():
+            self.no_way = self.search_algorithm.no_way_exists()
+            return
 
