@@ -6,7 +6,6 @@ import pygame.time
 from src.separated.Map.Map import Map
 from src.separated.Settings.settings import *
 from src.separated.search_algorithms.Algorithms import Algorithms
-from src.separated.search_algorithms.Bfs import Bfs
 
 
 class Window:
@@ -134,12 +133,13 @@ class Window:
     def update(self):
         pg.display.update()
         self.check_events()
-        self.draw()
-        #self.block_map.draw()
 
-    def run(self):
+        self.draw()
+
+    def run(self) -> int:
 
         self.update()
+
         if self.start and not self.initialized:
             self.initialized = True
             start, end = self.block_map.get_start_end_points()
@@ -150,9 +150,3 @@ class Window:
 
         elif self.initialized:
             self.search_algorithm.perform_search()
-
-        if self.search_algorithm.goal_found:
-            self.found = True
-
-        if self.search_algorithm.no_way_exists():
-            self.no_way = self.search_algorithm.no_way_exists()

@@ -16,6 +16,9 @@ class Bfs(Algorithms):
         self.no_way: bool = False
         self.visited: set[tuple[int, int]] = set()
 
+    def search_is_over(self) -> bool:
+        return any([self.goal_found, self.no_way])
+
     def initialize_start_coordinates(self, start_coordinates: tuple[int, int]):
         self.start_coordinates = start_coordinates
         self.queue.put(self.start_coordinates)
@@ -76,7 +79,8 @@ class Bfs(Algorithms):
         try:
             return self.map.final_map[block_coordinates] == 1
         except KeyError as ke:
-            return 1
+
+            pass
 
     def is_in_bounds(self, block_coordinates) -> bool:
         return (0, 0) < block_coordinates < (WIDTH, HEIGHT)

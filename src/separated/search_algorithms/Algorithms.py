@@ -44,6 +44,11 @@ class Algorithms(ABC):
     def no_way_exists(self) -> bool:
         ...
 
+
+    @abstractmethod
+    def search_is_over(self) -> bool:
+        ...
+
     @abstractmethod
     def goal_detected(self, block_coordinates: tuple[int, int]) -> bool:
 
