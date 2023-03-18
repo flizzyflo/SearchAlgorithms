@@ -32,34 +32,3 @@ class Map:
         if self.start_count - 1 >= 0:
             self.start_count -= 1
 
-    def draw(self) -> None:
-
-        for position in self.final_map:
-            map_value = self.final_map[position]
-
-            # wall element
-            if map_value == 1:
-                rect = pygame.draw.rect(surface=self.surface,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
-                                        color=WALL_COLOR,
-                                        width=1)
-
-            # start / goal element
-            elif map_value == 2:
-                rect = pygame.draw.rect(surface=self.surface,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
-                                        color=START_GOAL_COLOR,
-                                        border_radius=1)
-
-            # empty element
-            elif map_value == 0:
-                rect = pygame.draw.rect(surface=self.surface,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
-                                        color=EMPTY_COLOR)
-
-            elif map_value == 3:
-                rect = pygame.draw.rect(surface=self.surface,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
-                                        color="yellow")
-
-            self.all_rectangles[(position[0], position[1])] = rect

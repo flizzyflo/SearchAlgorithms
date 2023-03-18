@@ -56,7 +56,11 @@ class Bfs(Algorithms):
             self.queue.put((cur_x, cur_y + BLOCKSIZE))
 
         self.visited.add(self.current_coordinates)
-        self.map.final_map[self.current_coordinates] = 3
+
+        if self.current_coordinates == self.start_coordinates:
+            pass
+        else:
+            self.map.final_map[self.current_coordinates] = 3
 
     def get_current_coordinates(self) -> tuple[int, int]:
         return self.current_coordinates
