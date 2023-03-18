@@ -121,6 +121,7 @@ class Window:
             self.search_algorithm.perform_search()
 
         if self.search_algorithm.goal_found:
+            print("gefunden")
             return
 
         if self.search_algorithm.no_way_exists():

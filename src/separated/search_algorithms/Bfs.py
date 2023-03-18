@@ -69,7 +69,10 @@ class Bfs(Algorithms):
             block_coordinates=block_coordinates)
 
     def is_wall(self, block_coordinates) -> bool:
-        return self.map.final_map[block_coordinates] == 1
+        try:
+            return self.map.final_map[block_coordinates] == 1
+        except KeyError as ke:
+            return 1
 
     def is_in_bounds(self, block_coordinates) -> bool:
         return (0, 0) < block_coordinates < (WIDTH, HEIGHT)
