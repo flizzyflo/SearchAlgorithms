@@ -5,22 +5,24 @@ import pygame.time
 
 from src.separated.Map.Map import Map
 from src.separated.Settings.settings import *
+from src.separated.search_algorithms.Algorithms import Algorithms
 from src.separated.search_algorithms.Bfs import Bfs
 
 
 class Window:
     def __init__(self, search_algorithm, block_map: Map):
         pg.init()
-        self.screen = pg.display.set_mode(RESOLUTION)
+        self.screen: pygame.Surface = pg.display.set_mode(RESOLUTION)
 
         self.height, self.width = RESOLUTION
         self.block_map = block_map
         self.block_map.surface = self.screen
-        self.is_dragging = False
-        self.search_algorithm = search_algorithm
-        self.start = False
-        self.clock = pygame.time.Clock()
+        self.is_dragging: bool = False
+        self.search_algorithm: Algorithms = search_algorithm
+        self.start: bool = False
+        self.clock: pygame.time.Clock = pygame.time.Clock()
         self.clock.tick(FRAMERATE)
+        self.initialized: bool = False
 
     def draw(self):
         self.screen.fill(color=BACKGROUND_COLOR)
@@ -106,32 +108,21 @@ class Window:
         self.block_map.draw()
 
     def run(self):
-        c = 0
 
-        while True:
-            self.update()
-            if self.start and c != 1:
-                c = 1
-                start, end = self.block_map.get_start_end_points()
+        self.update()
+        if self.start and not self.initialized:
+            self.initialized = True
+            start, end = self.block_map.get_start_end_points()
 
-                self.search_algorithm.initialize_start_coordinates(start)
-                self.search_algorithm.initialize_goal_coordinates(end)
-                self.search_algorithm.perform_search()
+            self.search_algorithm.initialize_start_coordinates(start)
+            self.search_algorithm.initialize_goal_coordinates(end)
+            self.search_algorithm.perform_search()
 
-            elif c == 1:
-                self.search_algorithm.perform_search()
-                if self.search_algorithm.goal_found:
-                    print("gefunden")
-                    return
+        elif self.initialized:
+            self.search_algorithm.perform_search()
+            if self.search_algorithm.goal_found:
+                print("gefunden")
+                return
 
-
-if __name__ == '__main__':
-
-    m = Map()
-    b = Bfs(map=m)
-
-    w = Window(block_map=m,
-               search_algorithm=b)
-    w.run()
 
 
