@@ -1,5 +1,5 @@
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import BLOCKSIZE, HEIGHT, WIDTH
+from src.settings.settings import BLOCKSIZE, HEIGHT, WIDTH, VISITED_BLOCK
 from src.search_algorithms.algorithms_abstract_base_class import Algorithms
 from queue import Queue
 
@@ -53,4 +53,4 @@ class Bfs(Algorithms):
         if self.current_coordinates == self.start_coordinates:
             pass
         else:
-            self.map_structure.final_map[self.current_coordinates] = 3
+            self.map_structure.final_map[self.current_coordinates] = VISITED_BLOCK
