@@ -1,4 +1,4 @@
-RESOLUTION = HEIGHT, WIDTH = 1000, 1000
+RESOLUTION = WIDTH, HEIGHT = 700, 700
 
 BLOCKSIZE: int = 10
 FRAMERATE: int = 60
@@ -16,3 +16,14 @@ EMPTY_BLOCK: int = 0
 START_BLOCK: int = 2
 END_BLOCK: int = 3
 VISITED_BLOCK: int = 4
+
+INFORMATION_FRAME_TEXT="""User-Manual:
+\n1. Select the screen size or stick with default values.
+\n2. Select the  search-algorithm
+\n3. Select randomized walls or not
+\n4. Initialize the program. When changing things before starting, you need to re-initialize.
+\n5. Click 'Start' button. New window appears containing the program itself.
+\n ------- You started the program, all information below are relevant for the search-algorithm window -------
+\n6. By clicking the right mouse button, you can set both, start (blue) and destination(red). Both are required to start.
+\n7. By clicking the left mouse button you can either add additional or delete existing walls.
+\n8. Click any button on your keyboard to start the search algorithm."""
