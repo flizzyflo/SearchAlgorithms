@@ -1,9 +1,9 @@
 from src.map_structure.map_structure import MapStructure
-from src.search_algorithms.algorithms_abstract_base_class import Algorithms
-from src.settings.settings import BLOCKSIZE, HEIGHT, WIDTH, VISITED_BLOCK
+from src.search_algorithms.algorithms_abstract_base_class import Algorithm
+from src.settings.settings import BLOCKSIZE, VISITED_BLOCK
 
 
-class Dfs(Algorithms):
+class Dfs(Algorithm):
 
     def __init__(self, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
@@ -23,6 +23,7 @@ class Dfs(Algorithms):
             self.no_way_found = True
             return
 
+        # get next block to visit
         cur_x, cur_y = self.stack.pop()
         self.current_coordinates = (cur_x, cur_y)
 
@@ -36,7 +37,7 @@ class Dfs(Algorithms):
             return
 
         # case way can exist and goal not detected. put neighbours to stack
-        # blocksize is added to shift to the next block coordinate
+        # blocksize is the step-length to take to get to the neighbour
         if self.is_valid_coordinate(block_coordinates=(cur_x, cur_y - BLOCKSIZE)):
             self.stack.append((cur_x, cur_y - BLOCKSIZE))
         if self.is_valid_coordinate(block_coordinates=(cur_x - BLOCKSIZE, cur_y)):
