@@ -4,20 +4,22 @@ import pygame as pg
 import pygame.time
 
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import *
-from src.search_algorithms.algorithms_abstract_base_class import Algorithms
+from src.settings.settings import BLOCKSIZE, START_BLOCK, START_COLOR, VISITED_BLOCK, VISITED_COLOR, FRAMERATE, TITLE, \
+    BACKGROUND_COLOR, WALL_COLOR, EMPTY_COLOR, EMPTY_BLOCK, END_BLOCK, GOAL_COLOR, WALL_BLOCK
+from src.search_algorithms.algorithms_abstract_base_class import Algorithm
 
 
 class ApplicationWindow:
-    def __init__(self, search_algorithm, block_map: MapStructure):
+    def __init__(self, *, width: int, height: int, search_algorithm: Algorithm, block_map: MapStructure):
         pg.init()
 
-        self.screen: pygame.Surface = pg.display.set_mode(RESOLUTION)
-        self.height, self.width = RESOLUTION
+        self.width, self.height = width, height
+        self.resolution = (self.width, self.height)
+        self.screen: pygame.Surface = pg.display.set_mode(self.resolution)
         self.block_map = block_map
         self.block_map.surface = self.screen
         self.is_dragging: bool = False
-        self.search_algorithm: Algorithms = search_algorithm
+        self.search_algorithm: Algorithm = search_algorithm
         self.search_started: bool = False
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.clock.tick(FRAMERATE)
@@ -26,7 +28,6 @@ class ApplicationWindow:
         self.no_way: bool = self.search_algorithm.no_way_exists()
         self.start_block_set: bool = False
         self.start_and_end_block_set: bool = False
-
 
         pygame.display.set_caption(TITLE)
 
