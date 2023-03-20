@@ -1,10 +1,10 @@
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import BLOCKSIZE, HEIGHT, WIDTH, VISITED_BLOCK
-from src.search_algorithms.algorithms_abstract_base_class import Algorithms
+from src.settings.settings import BLOCKSIZE, VISITED_BLOCK
+from src.search_algorithms.algorithms_abstract_base_class import Algorithm
 from queue import Queue
 
 
-class Bfs(Algorithms):
+class Bfs(Algorithm):
 
     def __init__(self, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
@@ -19,26 +19,27 @@ class Bfs(Algorithms):
 
     def perform_search(self) -> None:
 
+        # goal was not found
         if self.block_queue.empty():
             self.no_way_found = True
 
+        # get next block to visit
         cur_x, cur_y = self.block_queue.get()
         self.current_coordinates = (cur_x, cur_y)
-
 
         if self.current_coordinates in self.is_visited:
             return
 
-       # case: goal reached
+        # case: goal reached
         if self.goal_detected(block_coordinates=self.current_coordinates):
             self.goal_found = True
             return
 
         # current coordinate is not visible / existing
-        if not self.is_valid_coordinate(block_coordinates=(cur_x, cur_y)):
+        if self.is_valid_coordinate(block_coordinates=(cur_x, cur_y)) is False:
             return
 
-        # check any adjacent coordinate
+        # check any adjacent coordinate. blocksize is the step-length to take to get to the neighbour
         if self.is_valid_coordinate(block_coordinates=(cur_x + BLOCKSIZE, cur_y)):
             self.block_queue.put((cur_x + BLOCKSIZE, cur_y))
         if self.is_valid_coordinate(block_coordinates=(cur_x - BLOCKSIZE, cur_y)):
