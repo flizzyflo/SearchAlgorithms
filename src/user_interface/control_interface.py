@@ -22,7 +22,7 @@ class ControlInterface(tk.Tk):
                              row=0)
 
         self.label_width = tk.Label(master=self.size_frame,
-                                    text="Width",
+                                    text="Screen width",
                                     justify="right")
         self.label_width.grid(row=0,
                               column=0)
@@ -33,7 +33,7 @@ class ControlInterface(tk.Tk):
                                     column=1)
 
         self.label_height = tk.Label(master=self.size_frame,
-                                     text="Heigth",
+                                     text="Screen height",
                                      justify="right")
         self.label_height.grid(row=1,
                                column=0)
@@ -83,12 +83,12 @@ class ControlInterface(tk.Tk):
         self.checkbox.pack(fill= tk.X)
 
         self.initialize_application_button = tk.Button(master= self.button_frame,
-                                                       text="Initialize Programm",
+                                                       text="Initialize Program",
                                                        command=lambda: self.initialize_search_application())
         self.initialize_application_button.pack(fill=tk.X)
 
         self.start_button = tk.Button(master=self.button_frame,
-                                      text="Start search programm",
+                                      text="Search!",
                                       command=lambda: self.run(),
                                       state=tk.DISABLED)
         self.start_button.pack(fill=tk.X)
