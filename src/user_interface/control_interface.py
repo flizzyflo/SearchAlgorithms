@@ -5,6 +5,8 @@ from tkinter import messagebox
 from src.map_structure.map_structure import MapStructure
 from src.search_algorithms.breadth_first_search import Bfs
 from src.search_algorithms.depth_first_search import Dfs
+from src.search_algorithms.path_finding_algorithms.a_star_pathfinding import AStarPathfinding
+from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstract import PathfindingAlgorithm
 from src.settings.settings import INFORMATION_FRAME_TEXT, RESOLUTION
 from src.user_interface.application_window import ApplicationWindow
 
@@ -22,7 +24,7 @@ class ControlInterface(tk.Tk):
                              row=0)
 
         self.label_width = tk.Label(master=self.size_frame,
-                                    text="Screen width",
+                                    text="Screen width: ",
                                     justify="right")
         self.label_width.grid(row=0,
                               column=0)
@@ -33,7 +35,7 @@ class ControlInterface(tk.Tk):
                                     column=1)
 
         self.label_height = tk.Label(master=self.size_frame,
-                                     text="Screen height",
+                                     text="Screen height: ",
                                      justify="right")
         self.label_height.grid(row=1,
                                column=0)
@@ -62,7 +64,9 @@ class ControlInterface(tk.Tk):
                                           justify="left")
         self.information_label.pack(fill=tk.X)
 
-        self.search_algorithms = {"Breadth First Search": Bfs, "Depth First Search": Dfs}
+        self.search_algorithms = {"Breadth First Search": Bfs,
+                                  "Depth First Search": Dfs,
+                                  "A*": AStarPathfinding}
         self.application = None
         self.map_structure = None
         self.search_algorithm = None
@@ -76,19 +80,19 @@ class ControlInterface(tk.Tk):
                            value=key).pack(fill= tk.X)
 
         self.checkbox = tk.Checkbutton(master=self.button_frame,
-                                       text="Randomized Walls?",
+                                       text="Randomize Walls",
                                        variable=self.randomized_walls,
                                        onvalue=1,
                                        offvalue=0)
         self.checkbox.pack(fill= tk.X)
 
         self.initialize_application_button = tk.Button(master= self.button_frame,
-                                                       text="Initialize Program",
+                                                       text="Initialize",
                                                        command=lambda: self.initialize_search_application())
         self.initialize_application_button.pack(fill=tk.X)
 
         self.start_button = tk.Button(master=self.button_frame,
-                                      text="Search!",
+                                      text="Search",
                                       command=lambda: self.run(),
                                       state=tk.DISABLED)
         self.start_button.pack(fill=tk.X)
@@ -110,15 +114,21 @@ class ControlInterface(tk.Tk):
         self.width = self.label_width_entry.get()
         self.height = self.label_height_entry.get()
 
-        if not self.input_is_integer(input_value=self.width) or not self.input_is_integer(input_value=self.height):
+        if not self.input_is_integer(input_value=self.width):
             messagebox.showinfo(title="Wrong input",
-                                message="Please enter a number as input for height / width and initialize again.")
+                                message="Please enter a number as input for width and initialize again.")
+            return
+
+        if not self.input_is_integer(input_value=self.height):
+            messagebox.showinfo(title="Wrong input",
+                                message="Please enter a number as input for height and initialize again.")
             return
 
         # normalize values if someone entered values like 344 or 522 or whatever
         self.width = self.normalize_values(value_to_normalize=self.width)
         self.height = self.normalize_values(value_to_normalize=self.height)
 
+        # turns 1 or 0 into true or false
         randomized_walls = bool(self.randomized_walls.get())
         self.map_structure = MapStructure(randomized_walls=randomized_walls,
                                           width=int(self.width),
@@ -141,4 +151,8 @@ class ControlInterface(tk.Tk):
             self.application.run()
             # either found goal or no way exists
             if self.application.search_is_over():
-                input()
+                dest = self.application.search_algorithm.destination_coordinates
+                if isinstance(self.application.search_algorithm, PathfindingAlgorithm):
+                    r = self.application.search_algorithm.backtrack_from_destination_to_start(dest)
+                    self.application.search_algorithm.paint_blocks(r)
+                    input()
