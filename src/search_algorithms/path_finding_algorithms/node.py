@@ -21,25 +21,28 @@ class Node:
         self.enqueued: bool = False
         Node.all_nodes[self.coordinates] = self
 
-    def get_h_value(self) -> int:
-        return self.h_value
-
-    def get_coordinate(self) -> tuple[int, int]:
+    def get_coordinates(self) -> tuple[int, int]:
         return self.coordinates
 
     def get_predecessor_coordinates(self) -> tuple[int, int]:
         return self.predecessor_coordinates
 
-    def get_g_value(self) -> int:
-        return self.g_value
-
     def set_predecessor_coordinates(self, predecessor_coordinates: tuple[int, int]) -> None:
         self.predecessor_coordinates = predecessor_coordinates
 
-    def set_g_value(self, g_value: int) -> None:
+    def get_real_distance_travel_costs(self) -> int:
+        return self.g_value
+
+    def set_real_distance_travel_costs_to(self, g_value: int) -> None:
         self.g_value = g_value
 
-    def set_f_val_to(self, f_value: int) -> None:
+    def get_heuristic_distance_travel_costs(self) -> int:
+        return self.h_value
+
+    def set_heuristic_travel_costs_to(self, h_value: int) -> None:
+        self.h_value = h_value
+
+    def set_total_travel_costs_to(self, f_value: int) -> None:
         self.f_value = f_value
 
     def __repr__(self):
@@ -61,7 +64,4 @@ class Node:
         return self.f_value >= other.f_value
 
     def __iter__(self):
-        return iter(self.coordinates)
-
-    def __next__(self):
-        ...
+        return iter(self.get_coordinates())
