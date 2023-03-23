@@ -4,7 +4,7 @@ from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstra
 
 class Djikstra(PathfindingAlgorithm):
 
-    def __init__(self, map_structure: MapStructure) -> None:
+    def __init__(self, *, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
 
     def perform_search(self) -> None:

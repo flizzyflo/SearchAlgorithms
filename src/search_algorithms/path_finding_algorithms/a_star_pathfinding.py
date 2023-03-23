@@ -8,7 +8,7 @@ from src.settings.settings import VISITED_BLOCK, BLOCKSIZE
 
 class AStarPathfinding(PathfindingAlgorithm):
 
-    def __init__(self, map_structure: MapStructure) -> None:
+    def __init__(self, *, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
 
         # store node and f-value in ordered way, minimum value first

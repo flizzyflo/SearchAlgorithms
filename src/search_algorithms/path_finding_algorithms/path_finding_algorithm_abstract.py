@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class PathfindingAlgorithm(SearchAlgorithm, ABC):
-    def __init__(self, map_structure: MapStructure) -> None:
+    def __init__(self, *, map_structure: MapStructure) -> None:
         super().__init__(map_structure= map_structure)
 
     @abstractmethod
