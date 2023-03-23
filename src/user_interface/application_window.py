@@ -87,7 +87,6 @@ class ApplicationWindow:
 
             if event.type == pg.QUIT:
                 pg.quit()
-                sys.exit()
 
             if event.type == pg.KEYDOWN:
                 self.search_started = True
@@ -198,3 +197,5 @@ class ApplicationWindow:
         elif self.algorithm_initialized:
             self.search_algorithm.perform_search()
 
+        else:
+            pass
