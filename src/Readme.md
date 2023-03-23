@@ -5,7 +5,7 @@
 - Implement Djikstras algorithm
 - Implement colorization
 - Refine closing behaviour of pygame screen
-- Add blocksize selection in tkinter UI
+- Add block-size selection in tkinter UI
 - Add search- and pathfinding frames in tkinter UI with respective labels
 
 ---
