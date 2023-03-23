@@ -77,7 +77,7 @@ class AStarPathfinding(PathfindingAlgorithm):
         # successor is visited and distance value stored
         # from current coordinate is higher than distance already stored, pass this and keep
         # already stored value, since it is shorter
-        if successor_node.enqueued and real_distance_travel_costs > successor_node.get_real_distance_travel_costs():
+        if successor_node.enqueued and real_distance_travel_costs >= successor_node.get_real_distance_travel_costs():
             return
 
         # set up real_distance_travel_cost from current node to successor node
