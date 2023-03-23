@@ -153,6 +153,8 @@ class ControlInterface(tk.Tk):
             if self.application.search_is_over():
                 dest = self.application.search_algorithm.destination_coordinates
                 if isinstance(self.application.search_algorithm, PathfindingAlgorithm):
-                    r = self.application.search_algorithm.backtrack_from_destination_to_start(dest)
-                    self.application.search_algorithm.paint_blocks(r)
+                    backtracking_list = self.application.search_algorithm.backtrack_from_destination_to_start(dest)
+                    self.application.block_map.set_blocks_to_shortest_path(backtracking_list)
+                    self.application.update()
+                    self.application.update()
                     input()
