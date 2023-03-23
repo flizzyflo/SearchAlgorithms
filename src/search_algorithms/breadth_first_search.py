@@ -53,7 +53,6 @@ class Bfs(SearchAlgorithm):
             neighbour = (current_block_x, current_block_y + BLOCKSIZE)
             self.block_queue.put(neighbour)
 
-
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
         if self.current_coordinates == self.start_coordinates:
