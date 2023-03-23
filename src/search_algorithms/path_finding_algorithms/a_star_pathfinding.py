@@ -2,17 +2,18 @@ from src.map_structure.map_structure import MapStructure
 from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstract import PathfindingAlgorithm
 from src.search_algorithms.path_finding_algorithms.node import Node
 from queue import PriorityQueue
-import time
 
-from src.settings.settings import VISITED_BLOCK, BLOCKSIZE, SHORTEST_PATH
+from src.settings.settings import VISITED_BLOCK, BLOCKSIZE
 
 
 class AStarPathfinding(PathfindingAlgorithm):
 
     def __init__(self, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
-        self.open_list: PriorityQueue = PriorityQueue() # store node and f-value in ordered way
-        # closed list is stored in 'is visited' set
+
+        # store node and f-value in ordered way, minimum value first
+        self.open_list: PriorityQueue = PriorityQueue()
+        # closed list is stored in 'is visited' set (is inherited)
 
     def perform_search(self) -> None:
 
@@ -40,16 +41,16 @@ class AStarPathfinding(PathfindingAlgorithm):
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x + BLOCKSIZE, current_block_y)):
-            self.expand_node(successor_coordinates=(current_block_x + BLOCKSIZE, current_block_y))
+            self.evaluate_successor_node(successor_coordinates=(current_block_x + BLOCKSIZE, current_block_y))
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x - BLOCKSIZE, current_block_y)):
-            self.expand_node(successor_coordinates=(current_block_x - BLOCKSIZE, current_block_y))
+            self.evaluate_successor_node(successor_coordinates=(current_block_x - BLOCKSIZE, current_block_y))
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - BLOCKSIZE)):
-            self.expand_node(successor_coordinates=(current_block_x, current_block_y - BLOCKSIZE))
+            self.evaluate_successor_node(successor_coordinates=(current_block_x, current_block_y - BLOCKSIZE))
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + BLOCKSIZE)):
-            self.expand_node(successor_coordinates=(current_block_x, current_block_y + BLOCKSIZE))
+            self.evaluate_successor_node(successor_coordinates=(current_block_x, current_block_y + BLOCKSIZE))
 
         current_node.enqueued = True
 
@@ -60,40 +61,48 @@ class AStarPathfinding(PathfindingAlgorithm):
         else:
             self.map_structure.final_map[self.current_coordinates] = VISITED_BLOCK
 
-    def expand_node(self, successor_coordinates: tuple[int, int]) -> None:
+    def evaluate_successor_node(self, successor_coordinates: tuple[int, int]) -> None:
 
-        time.sleep(0.00)
-        # successor node already visited, skip ('closed list')
+        # successor node passed in as argument already visited, skip node (stored in 'closed list')
         if self.already_visited_block(block_coordinates=successor_coordinates):
             return
 
+        # create successor node object, keeping track of the coordinates and predecessor coordinates
         successor_node = Node(coordinates=successor_coordinates,
-                              predecessor_coordinates=self.current_coordinates,
-                              g_value=Node.all_nodes[self.current_coordinates].get_g_value() + 1,
-                              h_value=self.get_heuristic_distance(successor_coordinates=successor_coordinates))
+                              predecessor_coordinates=self.current_coordinates)
 
-        temp_g = Node.all_nodes[self.current_coordinates].get_g_value() + 1
+        # calculate costs for distance from current node to successor node
+        real_distance_travel_costs = Node.all_nodes[self.current_coordinates].get_real_distance_travel_costs() + 1
 
-        # successor is visited and distance value from this current coordinate is higher than distnace already stored
-        if successor_node.enqueued and temp_g > successor_node.get_g_value():
+        # successor is visited and distance value stored
+        # from current coordinate is higher than distance already stored, pass this and keep
+        # already stored value, since it is shorter
+        if successor_node.enqueued and real_distance_travel_costs > successor_node.get_real_distance_travel_costs():
             return
 
-        successor_node.set_predecessor_coordinates(predecessor_coordinates=self.current_coordinates)
-        successor_node.set_g_value(g_value=temp_g)
+        # set up real_distance_travel_cost from current node to successor node
+        successor_node.set_real_distance_travel_costs_to(g_value=real_distance_travel_costs)
 
-        # f_val is total cost of track
-        f_val = temp_g + self.get_heuristic_distance(successor_coordinates=successor_coordinates)
-        #successor_node.set_f_val_to(f_value=f_val)
+        # calculate estimated distance from successor node to destination node based on heuristic
+        heuristic_travel_costs = self.calculate_heuristic_distance(successor_coordinates=successor_coordinates)
+        successor_node.set_heuristic_travel_costs_to(h_value=heuristic_travel_costs)
 
+        # sum up real costs from current node to successor and estimated cost from successor to destination
+        total_travel_cost = real_distance_travel_costs + heuristic_travel_costs
+
+        # successor node is already stored in open list, but total travel costs need to be updated
         if successor_node in self.open_list.queue:
-            successor_node.set_f_val_to(f_value=f_val)
+            successor_node.set_total_travel_costs_to(f_value=total_travel_cost)
+
         else:
-            successor_node.set_f_val_to(f_value=f_val)
+            # node not listed, insert it into list
+            successor_node.set_total_travel_costs_to(f_value=total_travel_cost)
             self.open_list.put(successor_node)
 
+        # store information about being enqueued
         successor_node.enqueued = True
 
-    def get_heuristic_distance(self, successor_coordinates: tuple[int, int]) -> int:
+    def calculate_heuristic_distance(self, successor_coordinates: tuple[int, int]) -> int:
 
         # same x position, difference in y is the heuristic
         if successor_coordinates[0] == self.destination_coordinates[0]:
@@ -103,25 +112,29 @@ class AStarPathfinding(PathfindingAlgorithm):
         elif successor_coordinates[1] == self.destination_coordinates[1]:
             return abs(self.destination_coordinates[0] - successor_coordinates[0])
 
-        # heuristic needed, calculate side length with pythagoras
+        # heuristic needed, calculate side length with pythagoras as approximation for distance
         else:
-            return self.calculate_pythagoras(a=(successor_coordinates[0] - self.destination_coordinates[0]) ** 2,
-                                             b=(successor_coordinates[1] - self.destination_coordinates[1]) ** 2)
+            return self.calculate_pythagoras(a=(successor_coordinates[0] - self.destination_coordinates[0]),
+                                             b=(successor_coordinates[1] - self.destination_coordinates[1]))
 
     def calculate_pythagoras(self, a: int, b: int) -> int:
+        a: int = a ** 2
+        b: int = b ** 2
         return int((a + b) ** 0.5)
 
     def initialize_start_coordinates(self, start_coordinates: tuple[int, int]) -> None:
-        start_node = Node(coordinates=start_coordinates,
-                          predecessor_coordinates=None,
-                          g_value=0,
-                          h_value=0,
-                          f_value=0)
-        self.open_list.put(start_node)
-        start_node.enqueued = True
-        self.start_coordinates = start_node.coordinates
 
-    def backtrack_from_destination_to_start(self, current_coordinates: tuple[int, int], node_list: list = list()) -> list[tuple[int, int]]:
+        start_node = Node(coordinates=start_coordinates,
+                          predecessor_coordinates=None)
+
+        self.open_list.put(start_node)
+        self.start_coordinates = start_node.coordinates
+        start_node.enqueued = True
+
+    def backtrack_from_destination_to_start(self,
+                                            current_coordinates: tuple[int, int],
+                                            node_list: list = list()) -> list[tuple[int, int]]:
+
         node_list.append(current_coordinates)
         while True:
 
@@ -131,6 +144,3 @@ class AStarPathfinding(PathfindingAlgorithm):
             return self.backtrack_from_destination_to_start(current_coordinates=Node.all_nodes[current_coordinates].get_predecessor_coordinates(),
                                                             node_list=node_list)
 
-    def paint_blocks(self, blocks_to_be_painted: list[tuple[int, int]]):
-        for block in blocks_to_be_painted:
-            self.map_structure.final_map[block] = SHORTEST_PATH
