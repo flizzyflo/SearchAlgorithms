@@ -97,3 +97,11 @@ class MapStructure:
         start = [position for position in self.final_map.keys() if self.final_map[position] == START_BLOCK]
         destination = [position for position in self.final_map.keys() if self.final_map[position] == DESTINATION_BLOCK]
         return start[0], destination[0]
+
+    def set_blocks_to_shortest_path(self, blocks_to_be_painted: list[tuple[int, int]]) -> None:
+        start, destination = self.get_start_destination_points()
+        for block in blocks_to_be_painted:
+            if block == start or block == destination:
+                continue
+            self.final_map[block] = SHORTEST_PATH
+
