@@ -1,13 +1,11 @@
-import sys
-
 import pygame as pg
 import pygame.time
 
 from src.map_structure.map_structure import MapStructure
+from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
 from src.settings.settings import BLOCKSIZE, START_BLOCK, START_COLOR, VISITED_BLOCK, VISITED_COLOR, FRAMERATE, TITLE, \
     BACKGROUND_COLOR, WALL_COLOR, EMPTY_COLOR, EMPTY_BLOCK, DESTINATION_BLOCK, GOAL_COLOR, WALL_BLOCK, SHORTEST_PATH, \
     SHORTEST_PATH_COLOR
-from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
 
 
 class ApplicationWindow:
