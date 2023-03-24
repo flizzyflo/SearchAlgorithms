@@ -121,3 +121,5 @@ class SearchAlgorithm(ABC):
 
         return block_coordinates == self.destination_coordinates
 
+    def destination_found(self) -> bool:
+        return self.destination_detected
