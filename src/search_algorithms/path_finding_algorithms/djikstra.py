@@ -4,6 +4,10 @@ from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstra
 
 class Djikstra(PathfindingAlgorithm):
 
+    """
+    Class to find path between two points using the Djikstra algorithm.
+    """
+
     def __init__(self, *, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
 

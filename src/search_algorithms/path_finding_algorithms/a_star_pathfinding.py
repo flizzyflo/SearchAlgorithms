@@ -8,6 +8,10 @@ from src.settings.settings import VISITED_BLOCK, BLOCKSIZE
 
 class AStarPathfinding(PathfindingAlgorithm):
 
+    """
+    Class to find path between two points using the A* algorithm.
+    """
+
     def __init__(self, *, map_structure: MapStructure) -> None:
         super().__init__(map_structure=map_structure)
 
