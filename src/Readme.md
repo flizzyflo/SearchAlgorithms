@@ -3,10 +3,10 @@
 ---
 ### To-Do´s
 - Implement Djikstras algorithm
-- Implement colorization
+- Implement colorization of next blocks
 - Refine closing behaviour of pygame screen
 - Add block-size selection in tkinter UI
-- Add search- and pathfinding frames in tkinter UI with respective labels
+- Improve run function from control interface
 
 ---
 ## Table of content
