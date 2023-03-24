@@ -49,13 +49,20 @@ class ControlInterface(tk.Tk):
         self.button_frame.grid(column=0,
                                row=1,
                                sticky="NSWE")
-        self.algorithm_selection_frame = tk.Frame(master=self.button_frame,
-                                                  relief="groove",
-                                                  borderwidth=2)
-        self.algorithm_selection_frame.pack(fill=tk.X)
+        self.search_algorithm_selection_frame = tk.Frame(master=self.button_frame,
+                                                         relief="groove",
+                                                         borderwidth=2)
+        self.search_algorithm_selection_frame.pack(fill=tk.X)
+
+        self.pathfinding_algorithm_selection_frame = tk.Frame(master=self.button_frame,
+                                                              relief="groove",
+                                                              borderwidth=2)
+        self.pathfinding_algorithm_selection_frame.pack(fill=tk.X)
+
         self.information_frame = tk.Frame(master=self,
                                           relief="groove",
                                           borderwidth=2)
+
         self.information_frame.grid(column=1,
                                     row=0,
                                     rowspan=2)
@@ -65,19 +72,34 @@ class ControlInterface(tk.Tk):
         self.information_label.pack(fill=tk.X)
 
         self.search_algorithms = {"Breadth First Search": Bfs,
-                                  "Depth First Search": Dfs,
-                                  "A*": AStarPathfinding}
+                                  "Depth First Search": Dfs}
+
+        self.pathfinding_algorithms = {"A*": AStarPathfinding,
+                                       "Djikstra": None}
         self.application = None
         self.map_structure = None
         self.search_algorithm = None
         self.initialized = False
         self.selected_search_algorithm = tk.StringVar()
         self.randomized_walls = tk.IntVar()
+        self.search_algorithm_label = tk.Label(master=self.search_algorithm_selection_frame,
+                                               text="Search algorithms")
+        self.search_algorithm_label.pack(fill=tk.X)
+        self.pathfinding_algorithm_label = tk.Label(master=self.pathfinding_algorithm_selection_frame,
+                                               text="Pathfinding algorithms")
+        self.pathfinding_algorithm_label.pack(fill=tk.X)
+
         for key in self.search_algorithms.keys():
-            tk.Radiobutton(master=self.algorithm_selection_frame,
+            tk.Radiobutton(master=self.search_algorithm_selection_frame,
                            text=key,
                            variable=self.selected_search_algorithm,
-                           value=key).pack(fill= tk.X)
+                           value=key).pack(fill=tk.X)
+
+        for key in self.pathfinding_algorithms.keys():
+            tk.Radiobutton(master=self.pathfinding_algorithm_selection_frame,
+                           text=key,
+                           variable=self.selected_search_algorithm,
+                           value=key).pack(fill=tk.X)
 
         self.checkbox = tk.Checkbutton(master=self.button_frame,
                                        text="Randomize Walls",
@@ -103,6 +125,19 @@ class ControlInterface(tk.Tk):
         self.quit_button.pack(fill=tk.X)
 
     def normalize_values(self, *, value_to_normalize: str) -> int:
+
+        """
+        Normalizes a value selected as either height or width and rounds it.
+        Cuts of any number which is not divisible by 10 from the input given.
+        Parameters
+        ----------
+        value_to_normalize
+
+        Returns
+        -------
+
+        """
+
         value_to_normalize = (int(value_to_normalize) // 10) * 10
         return value_to_normalize
 
@@ -134,7 +169,11 @@ class ControlInterface(tk.Tk):
                                           width=int(self.width),
                                           height=int(self.height))
         selected_algorithm = self.selected_search_algorithm.get()
-        self.search_algorithm = self.search_algorithms[selected_algorithm](map_structure=self.map_structure)
+
+        try:  # search algorithm
+            self.search_algorithm = self.search_algorithms[selected_algorithm](map_structure=self.map_structure)
+        except KeyError as ke:  # pathfinding algorithm, which is not present in search algos, thus raises a key-error
+            self.search_algorithm = self.pathfinding_algorithms[selected_algorithm](map_structure=self.map_structure)
 
         self.initialized = True
         self.start_button.config(state=tk.ACTIVE)
@@ -146,15 +185,20 @@ class ControlInterface(tk.Tk):
                                              width=int(self.width),
                                              height=int(self.height))
 
-        while True:
+        running: bool = True
+        while running:
             
             self.application.run()
-            # either found goal or no way exists
-            if self.application.search_is_over():
+
+            if self.application.search_algorithm.destination_found():
                 dest = self.application.search_algorithm.destination_coordinates
                 if isinstance(self.application.search_algorithm, PathfindingAlgorithm):
                     backtracking_list = self.application.search_algorithm.backtrack_from_destination_to_start(dest)
                     self.application.block_map.set_blocks_to_shortest_path(backtracking_list)
                     self.application.update()
                     self.application.update()
-                    input()
+
+                input()
+
+            if self.application.search_algorithm.no_way_exists():
+                ...
