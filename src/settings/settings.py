@@ -1,6 +1,6 @@
-RESOLUTION = WIDTH, HEIGHT = 800, 800
+RESOLUTION = WIDTH, HEIGHT = 600, 600
 
-BLOCKSIZE: int = 8
+BLOCKSIZE: int = 10
 FRAMERATE: int = 60
 TITLE: str = "Search Algos Visualized"
 
