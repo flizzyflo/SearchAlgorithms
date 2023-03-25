@@ -7,15 +7,20 @@ from src.settings.settings import *
 
 class MapStructure:
 
-    def __init__(self, *, width: int, height: int, randomized_walls: bool = False):
+    def __init__(self, *, width: int, height: int, blocksize: int, randomized_walls: bool = False):
         self.surface: pygame.Surface = None
         self.final_map: dict[tuple[int, int], int] = {}
         self.all_rectangles: dict[tuple[int, int], pygame.Rect] = {}
-        self.width = width
-        self.height = height
+        self.width: int = width
+        self.height: int = height
+        self.blocksize: int = blocksize
         self.initialize_input_map()
         if randomized_walls:
             self.create_random_walls()
+
+    def get_blocksize(self) -> int:
+        return self.blocksize
+
 
     def get_height(self) -> int:
 
@@ -52,10 +57,10 @@ class MapStructure:
 
         # initializes an empty map. zero is an empty block
         # range is divided to calculate the number of blocks for both, height and width
-        for i in range((self.height + BLOCKSIZE) // BLOCKSIZE):
-            for j in range((self.width + BLOCKSIZE) // BLOCKSIZE):
+        for i in range((self.height + self.blocksize) // self.blocksize):
+            for j in range((self.width + self.blocksize) // self.blocksize):
                 # coordinates are the key, value is the type of block, here initialized as empty block
-                self.final_map[(j * BLOCKSIZE, i * BLOCKSIZE)] = EMPTY_BLOCK
+                self.final_map[(j * self.blocksize, i * self.blocksize)] = EMPTY_BLOCK
 
     def create_random_walls(self) -> None:
 
