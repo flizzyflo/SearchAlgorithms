@@ -3,7 +3,7 @@ from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstra
 from src.search_algorithms.path_finding_algorithms.node import Node
 from queue import PriorityQueue
 
-from src.settings.settings import VISITED_BLOCK, BLOCKSIZE
+from src.settings.settings import VISITED_BLOCK, SELECTED_BLOCK
 
 
 class AStarPathfinding(PathfindingAlgorithm):
@@ -44,17 +44,37 @@ class AStarPathfinding(PathfindingAlgorithm):
         # current block is set as visited
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x + BLOCKSIZE, current_block_y)):
-            self.evaluate_successor_node(successor_coordinates=(current_block_x + BLOCKSIZE, current_block_y))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x + self.blocksize, current_block_y)):
+            neighbour_block = (current_block_x + self.blocksize, current_block_y)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x - BLOCKSIZE, current_block_y)):
-            self.evaluate_successor_node(successor_coordinates=(current_block_x - BLOCKSIZE, current_block_y))
+            if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
+                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - BLOCKSIZE)):
-            self.evaluate_successor_node(successor_coordinates=(current_block_x, current_block_y - BLOCKSIZE))
+            self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + BLOCKSIZE)):
-            self.evaluate_successor_node(successor_coordinates=(current_block_x, current_block_y + BLOCKSIZE))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x - self.blocksize, current_block_y)):
+            neighbour_block = (current_block_x - self.blocksize, current_block_y)
+
+            if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
+                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+
+            self.evaluate_successor_node(successor_coordinates=neighbour_block)
+
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - self.blocksize)):
+            neighbour_block = (current_block_x, current_block_y - self.blocksize)
+
+            if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
+                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+
+            self.evaluate_successor_node(successor_coordinates=neighbour_block)
+
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + self.blocksize)):
+            neighbour_block = (current_block_x, current_block_y + self.blocksize)
+
+            if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
+                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+
+            self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
         current_node.enqueued = True
 
@@ -95,6 +115,7 @@ class AStarPathfinding(PathfindingAlgorithm):
         total_travel_cost = real_distance_travel_costs + heuristic_travel_costs
 
         # successor node is already stored in open list, but total travel costs need to be updated
+        # better path is found for this block
         if successor_node in self.open_list.queue:
             successor_node.set_total_travel_costs_to(f_value=total_travel_cost)
 
