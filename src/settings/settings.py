@@ -2,15 +2,16 @@ RESOLUTION = WIDTH, HEIGHT = 600, 600
 
 BLOCKSIZE: int = 10
 FRAMERATE: int = 60
-TITLE: str = "Search Algos Visualized"
+TITLE: str = "Search- & pathfinding algorithms visualized"
 
-WALL_COLOR: str = "white"
-START_COLOR: str = "blue"
+WALL_BORDER_COLOR: str = "white"
+START_COLOR: str = "orange"
 GOAL_COLOR: str = "red"
 EMPTY_COLOR: str = "white"
 VISITED_COLOR: str = "lightblue"
-BACKGROUND_COLOR: str = "black"
-SHORTEST_PATH_COLOR: str = "lightgreen"
+BACKGROUND_COLOR: str = "black"  # wall color as well, since walls are small squaires which are transparent
+SHORTEST_PATH_COLOR: str = "green"
+SELECTED_BLOCK_COLOR: str = "blue"
 
 WALL_BLOCK: int = 1
 EMPTY_BLOCK: int = 0
@@ -18,6 +19,7 @@ START_BLOCK: int = 2
 DESTINATION_BLOCK: int = 3
 VISITED_BLOCK: int = 4
 SHORTEST_PATH: int = 5
+SELECTED_BLOCK: int = 6
 
 INFORMATION_FRAME_TEXT = """User-Manual:
 \n1. Set screen size
