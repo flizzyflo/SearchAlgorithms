@@ -4,8 +4,9 @@ import pygame.time
 from src.map_structure.map_structure import MapStructure
 from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
 from src.settings.settings import BLOCKSIZE, START_BLOCK, START_COLOR, VISITED_BLOCK, VISITED_COLOR, FRAMERATE, TITLE, \
-    BACKGROUND_COLOR, WALL_COLOR, EMPTY_COLOR, EMPTY_BLOCK, DESTINATION_BLOCK, GOAL_COLOR, WALL_BLOCK, SHORTEST_PATH, \
-    SHORTEST_PATH_COLOR
+    BACKGROUND_COLOR, WALL_BORDER_COLOR, EMPTY_COLOR, EMPTY_BLOCK, DESTINATION_BLOCK, GOAL_COLOR, WALL_BLOCK, \
+    SHORTEST_PATH, \
+    SHORTEST_PATH_COLOR, SELECTED_BLOCK, SELECTED_BLOCK_COLOR
 
 
 class ApplicationWindow:
@@ -26,6 +27,7 @@ class ApplicationWindow:
         self.no_way: bool = self.search_algorithm.no_way_exists()
         self.start_block_set: bool = False
         self.start_and_end_block_set: bool = False
+        self.blocksize: int = self.block_map.get_blocksize()
 
         pygame.display.set_caption(TITLE)
 
@@ -42,39 +44,44 @@ class ApplicationWindow:
             # wall element
             if block_value == WALL_BLOCK:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
-                                        color=WALL_COLOR,
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
+                                        color=WALL_BORDER_COLOR,
                                         width=1)
 
             # start element
             elif block_value == START_BLOCK:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
                                         color=START_COLOR,
                                         border_radius=1)
 
             # empty element
             elif block_value == EMPTY_BLOCK:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
                                         color=EMPTY_COLOR)
 
             # goal value
             elif block_value == DESTINATION_BLOCK:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
                                         color=GOAL_COLOR)
 
             # visited element
             elif block_value == VISITED_BLOCK:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
                                         color=VISITED_COLOR)
+
+            elif block_value == SELECTED_BLOCK:
+                rect = pygame.draw.rect(surface=self.screen,
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
+                                        color=SELECTED_BLOCK_COLOR)
 
             # paint the shortest path blocks
             elif self.search_algorithm.destination_detected and block_value == SHORTEST_PATH:
                 rect = pygame.draw.rect(surface=self.screen,
-                                        rect=(position[0], position[1], BLOCKSIZE, BLOCKSIZE),
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
                                         color=SHORTEST_PATH_COLOR)
 
         # store rectangle-objects per coordinate; not necessary right now
@@ -93,8 +100,8 @@ class ApplicationWindow:
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 self.is_dragging = True
                 x, y = pg.mouse.get_pos()
-                x = (x // BLOCKSIZE) * BLOCKSIZE
-                y = (y // BLOCKSIZE) * BLOCKSIZE
+                x = (x // self.blocksize) * self.blocksize
+                y = (y // self.blocksize) * self.blocksize
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is wall, destroy wall
@@ -124,8 +131,8 @@ class ApplicationWindow:
             if event.type == pg.MOUSEMOTION and self.is_dragging:
                 x, y = pg.mouse.get_pos()
                 # normalize click position to fit the coordinate keys
-                x = (x // BLOCKSIZE) * BLOCKSIZE
-                y = (y // BLOCKSIZE) * BLOCKSIZE
+                x = (x // self.blocksize) * self.blocksize
+                y = (y // self.blocksize) * self.blocksize
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is wall pass in dragging mode
@@ -151,8 +158,8 @@ class ApplicationWindow:
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
                 x, y = pg.mouse.get_pos()
                 # normalize click position to fit the coordinate keys
-                x = (x // BLOCKSIZE) * BLOCKSIZE
-                y = (y // BLOCKSIZE) * BLOCKSIZE
+                x = (x // self.blocksize) * self.blocksize
+                y = (y // self.blocksize) * self.blocksize
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is declared as start block and will be turned into empty block
