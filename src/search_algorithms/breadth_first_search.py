@@ -1,5 +1,5 @@
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import BLOCKSIZE, VISITED_BLOCK
+from src.settings.settings import VISITED_BLOCK, SELECTED_BLOCK, DESTINATION_BLOCK
 from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
 from queue import Queue
 
@@ -24,7 +24,7 @@ class Bfs(SearchAlgorithm):
         current_block_x, current_block_y = self.block_queue.get()
         self.current_coordinates = (current_block_x, current_block_y)
 
-        if self.already_visited_block(block_coordinates=self.current_coordinates ):
+        if self.already_visited_block(block_coordinates=self.current_coordinates):
             return
 
         # case: goal reached
@@ -37,21 +37,29 @@ class Bfs(SearchAlgorithm):
             return
 
         # check any adjacent coordinate. blocksize is the step-length to take to get to the neighbour
-        if self.is_valid_coordinate(block_coordinates=(current_block_x + BLOCKSIZE, current_block_y)):
-            neighbour = (current_block_x + BLOCKSIZE, current_block_y)
-            self.block_queue.put(neighbour)
+        if self.is_valid_coordinate(block_coordinates=(current_block_x + self.blocksize, current_block_y)):
+            neighbour = (current_block_x + self.blocksize, current_block_y)
+            if not self.already_visited_block(block_coordinates=neighbour):
+                self.map_structure.final_map[neighbour] = SELECTED_BLOCK
+                self.block_queue.put(neighbour)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x - BLOCKSIZE, current_block_y)):
-            neighbour = (current_block_x - BLOCKSIZE, current_block_y)
-            self.block_queue.put(neighbour)
+        if self.is_valid_coordinate(block_coordinates=(current_block_x - self.blocksize, current_block_y)):
+            neighbour = (current_block_x - self.blocksize, current_block_y)
+            if not self.already_visited_block(block_coordinates=neighbour):
+                self.map_structure.final_map[neighbour] = SELECTED_BLOCK
+                self.block_queue.put(neighbour)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - BLOCKSIZE)):
-            neighbour = (current_block_x, current_block_y - BLOCKSIZE)
-            self.block_queue.put(neighbour)
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - self.blocksize)):
+            neighbour = (current_block_x, current_block_y - self.blocksize)
+            if not self.already_visited_block(block_coordinates=neighbour):
+                self.map_structure.final_map[neighbour] = SELECTED_BLOCK
+                self.block_queue.put(neighbour)
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + BLOCKSIZE)):
-            neighbour = (current_block_x, current_block_y + BLOCKSIZE)
-            self.block_queue.put(neighbour)
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + self.blocksize)):
+            neighbour = (current_block_x, current_block_y + self.blocksize)
+            if not self.already_visited_block(block_coordinates=neighbour):
+                self.map_structure.final_map[neighbour] = SELECTED_BLOCK
+                self.block_queue.put(neighbour)
 
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
@@ -60,3 +68,4 @@ class Bfs(SearchAlgorithm):
         else:
             # change map value to 'visited' to change color
             self.map_structure.final_map[self.current_coordinates] = VISITED_BLOCK
+            self.map_structure.final_map[self.destination_coordinates] = DESTINATION_BLOCK
