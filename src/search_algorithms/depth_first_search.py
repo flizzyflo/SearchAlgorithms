@@ -1,6 +1,6 @@
 from src.map_structure.map_structure import MapStructure
 from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
-from src.settings.settings import BLOCKSIZE, VISITED_BLOCK
+from src.settings.settings import VISITED_BLOCK
 
 
 class Dfs(SearchAlgorithm):
@@ -36,17 +36,17 @@ class Dfs(SearchAlgorithm):
         # case way can exist and goal not detected. put neighbours to stack
         # blocksize is the step-length to take to get to the neighbour
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - BLOCKSIZE)):
-            self.stack.append((current_block_x, current_block_y - BLOCKSIZE))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - self.blocksize)):
+            self.stack.append((current_block_x, current_block_y - self.blocksize))
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x - BLOCKSIZE, current_block_y)):
-            self.stack.append((current_block_x - BLOCKSIZE, current_block_y))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x - self.blocksize, current_block_y)):
+            self.stack.append((current_block_x - self.blocksize, current_block_y))
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + BLOCKSIZE)):
-            self.stack.append((current_block_x, current_block_y + BLOCKSIZE))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + self.blocksize)):
+            self.stack.append((current_block_x, current_block_y + self.blocksize))
 
-        if self.is_valid_coordinate(block_coordinates=(current_block_x + BLOCKSIZE, current_block_y)):
-            self.stack.append((current_block_x + BLOCKSIZE, current_block_y))
+        if self.is_valid_coordinate(block_coordinates=(current_block_x + self.blocksize, current_block_y)):
+            self.stack.append((current_block_x + self.blocksize, current_block_y))
 
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
