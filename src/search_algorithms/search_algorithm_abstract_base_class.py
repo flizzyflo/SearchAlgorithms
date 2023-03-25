@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import BLOCKSIZE, WALL_BLOCK
+from src.settings.settings import WALL_BLOCK
 
 
 class SearchAlgorithm(ABC):
@@ -16,6 +16,7 @@ class SearchAlgorithm(ABC):
         self.map_structure: MapStructure = map_structure
         self.height = self.map_structure.get_height()
         self.width = self.map_structure.get_width()
+        self.blocksize: int = self.map_structure.get_blocksize()
 
     @abstractmethod
     def perform_search(self) -> None:
@@ -62,7 +63,7 @@ class SearchAlgorithm(ABC):
         current_width: int = block_coordinates[0]
         current_height: int = block_coordinates[1]
 
-        return (0 <= current_width <= self.width - BLOCKSIZE) and (0 <= current_height <= self.height - BLOCKSIZE)
+        return (0 <= current_width <= self.width - self.blocksize) and (0 <= current_height <= self.height - self.blocksize)
 
     def no_way_exists(self) -> bool:
 
