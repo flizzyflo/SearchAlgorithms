@@ -3,9 +3,7 @@
 ---
 ### To-Do´s
 - Implement Djikstras algorithm
-- Implement colorization of next blocks
 - Refine closing behaviour of pygame screen
-- Add block-size selection in tkinter UI
 - Improve run function from control interface
 
 ---
