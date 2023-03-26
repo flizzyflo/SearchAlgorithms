@@ -60,7 +60,7 @@ class MapStructure:
         for i in range((self.height + self.blocksize) // self.blocksize):
             for j in range((self.width + self.blocksize) // self.blocksize):
                 # coordinates are the key, value is the type of block, here initialized as empty block
-                self.final_map[(j * self.blocksize, i * self.blocksize)] = EMPTY_BLOCK
+                self.final_map[(j * self.blocksize, i * self.blocksize)] = BlockColors.white.value
 
     def create_random_walls(self) -> None:
 
@@ -73,7 +73,7 @@ class MapStructure:
 
         for coordinate in self.final_map.keys():
             if random.randint(1, 20) % 3 == 0:
-                self.final_map[coordinate] = WALL_BLOCK
+                self.final_map[coordinate] = BlockColors.black.value
 
     def get_final_map(self) -> dict[tuple[int, int], int]:
 
@@ -99,8 +99,8 @@ class MapStructure:
         """
 
         # returns both, start and end point
-        start = [position for position in self.final_map.keys() if self.final_map[position] == START_BLOCK]
-        destination = [position for position in self.final_map.keys() if self.final_map[position] == DESTINATION_BLOCK]
+        start = [position for position in self.final_map.keys() if self.final_map[position] == BlockColors.purple.value]
+        destination = [position for position in self.final_map.keys() if self.final_map[position] == BlockColors.red.value]
         return start[0], destination[0]
 
     def set_blocks_to_shortest_path(self, blocks_to_be_painted: list[tuple[int, int]]) -> None:
@@ -108,5 +108,15 @@ class MapStructure:
         for block in blocks_to_be_painted:
             if block == start or block == destination:
                 continue
-            self.final_map[block] = SHORTEST_PATH
+            self.final_map[block] = BlockColors.green.value
 
+    def clear_selected_next_blocks(self) -> None:
+        for block, block_status in self.final_map.items():
+            if block_status == BlockColors.blue.value:
+                self.final_map[block] = BlockColors.white.value
+
+    def end_search_bc_no_way(self):
+        for block, block_value in self.final_map.items():
+            if block_value == BlockColors.red.value or block_value == BlockColors.purple.value:
+                continue
+            self.final_map[block] = BlockColors.DARK_RED.value
