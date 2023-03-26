@@ -47,7 +47,7 @@ class ControlInterface(tk.Tk):
                                column=1)
 
         self.label_blocksize = tk.Label(master=self.general_settings_frame,
-                                        text="Blocksize: ",
+                                        text="Block size: ",
                                         justify="right")
         self.label_blocksize.grid(row=2,
                                   column=0)
@@ -203,12 +203,18 @@ class ControlInterface(tk.Tk):
 
         self.initialized = True
 
+    def initialize_application_window(self, map_structure: MapStructure, search_algorithm: SearchAlgorithm, width: int, height: int) -> ApplicationWindow:
+        return ApplicationWindow(block_map=map_structure,
+                                 search_algorithm=search_algorithm,
+                                 width=int(width),
+                                 height=int(height))
+
     def run(self):
 
-        self.application = ApplicationWindow(block_map=self.map_structure,
-                                             search_algorithm=self.search_algorithm,
-                                             width=int(self.width),
-                                             height=int(self.height))
+        self.application = self.initialize_application_window(map_structure=self.map_structure,
+                                                              search_algorithm=self.search_algorithm,
+                                                              width=int(self.width),
+                                                              height=int(self.height))
 
         running: bool = True
         while running:
@@ -216,13 +222,16 @@ class ControlInterface(tk.Tk):
             self.application.run()
 
             if self.application.search_algorithm.destination_found():
-                dest = self.application.search_algorithm.destination_coordinates
-                if isinstance(self.application.search_algorithm, PathfindingAlgorithm):
-                    backtracking_list = self.application.search_algorithm.backtrack_from_destination_to_start(dest)
-                    self.application.block_map.set_blocks_to_shortest_path(backtracking_list)
-                    self.application.update()
-                    self.application.update()
 
+                destination_node_coordinates = self.application.search_algorithm.destination_coordinates
+                self.application.block_map.clear_selected_next_blocks()
+
+                if isinstance(self.application.search_algorithm, PathfindingAlgorithm):
+                    backtracking_list = self.application.search_algorithm.backtrack_path(destination_node_coordinates)
+                    self.application.block_map.set_blocks_to_shortest_path(backtracking_list)
+
+                self.application.update()
+                self.application.update()
                 input()
 
             if self.application.search_algorithm.no_way_exists():

@@ -2,11 +2,9 @@ import pygame as pg
 import pygame.time
 
 from src.map_structure.map_structure import MapStructure
+from src.search_algorithms.depth_first_search import Dfs
 from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
-from src.settings.settings import BLOCKSIZE, START_BLOCK, START_COLOR, VISITED_BLOCK, VISITED_COLOR, FRAMERATE, TITLE, \
-    BACKGROUND_COLOR, WALL_BORDER_COLOR, EMPTY_COLOR, EMPTY_BLOCK, DESTINATION_BLOCK, GOAL_COLOR, WALL_BLOCK, \
-    SHORTEST_PATH, \
-    SHORTEST_PATH_COLOR, SELECTED_BLOCK, SELECTED_BLOCK_COLOR
+from src.settings.settings import FRAMERATE, TITLE, BlockColors
 
 
 class ApplicationWindow:
@@ -36,53 +34,66 @@ class ApplicationWindow:
 
     def draw(self):
 
-        self.screen.fill(color=BACKGROUND_COLOR)
+        self.screen.fill(color=BlockColors.black.value)
 
         for position in self.block_map.final_map:
             block_value = self.block_map.final_map[position]
 
             # wall element
-            if block_value == WALL_BLOCK:
+            if block_value == BlockColors.black.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=WALL_BORDER_COLOR,
+                                        color=BlockColors.white.name,
                                         width=1)
 
             # start element
-            elif block_value == START_BLOCK:
+            elif block_value == BlockColors.purple.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=START_COLOR,
+                                        color=BlockColors.purple.name,
                                         border_radius=1)
 
             # empty element
-            elif block_value == EMPTY_BLOCK:
+            elif block_value == BlockColors.white.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=EMPTY_COLOR)
+                                        color=BlockColors.white.name)
 
             # goal value
-            elif block_value == DESTINATION_BLOCK:
+            elif block_value == BlockColors.red.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=GOAL_COLOR)
+                                        color=BlockColors.red.name)
 
             # visited element
-            elif block_value == VISITED_BLOCK:
+            elif block_value == BlockColors.lightblue.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=VISITED_COLOR)
+                                        color=BlockColors.lightblue.name)
 
-            elif block_value == SELECTED_BLOCK:
+            # selected block for next search iteration, stored in datastructure
+            elif block_value == BlockColors.blue.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=SELECTED_BLOCK_COLOR)
+                                        color=BlockColors.blue.name)
+
+            # current visited block, which is investigated
+            elif block_value == BlockColors.yellow.value:
+                rect = pygame.draw.rect(surface=self.screen,
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
+                                        color=BlockColors.yellow.name)
+
+            # turn all blocks red in case no way exists
+            elif block_value == BlockColors.DARK_RED.value:
+                rect = pygame.draw.rect(surface=self.screen,
+                                        rect=(position[0], position[1], self.blocksize, self.blocksize),
+                                        color=BlockColors.DARK_RED.name)
 
             # paint the shortest path blocks
-            elif self.search_algorithm.destination_detected and block_value == SHORTEST_PATH:
+            elif self.search_algorithm.destination_detected and block_value == BlockColors.green.value:
                 rect = pygame.draw.rect(surface=self.screen,
                                         rect=(position[0], position[1], self.blocksize, self.blocksize),
-                                        color=SHORTEST_PATH_COLOR)
+                                        color=BlockColors.green.name)
 
         # store rectangle-objects per coordinate; not necessary right now
         self.block_map.all_rectangles[(position[0], position[1])] = rect
@@ -105,23 +116,23 @@ class ApplicationWindow:
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is wall, destroy wall
-                if clicked_block == WALL_BLOCK:
-                    self.block_map.final_map[(x, y)] = EMPTY_BLOCK
+                if clicked_block == BlockColors.black.value:
+                    self.block_map.final_map[(x, y)] = BlockColors.white.value
 
                 # clicked block is already declared as start block, turn it into wall
-                elif clicked_block == START_BLOCK:
+                elif clicked_block == BlockColors.purple.value:
                     self.start_block_set = False
                     self.start_and_end_block_set = False
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
                 # clicked block is declared as end block, turn it into wall
-                elif clicked_block == DESTINATION_BLOCK:
+                elif clicked_block == BlockColors.red.value:
                     self.start_and_end_block_set = False
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
                 # empty block
                 else:
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
             # relevant for dragging mouse. checks if mousebutton is released
             if event.type == pg.MOUSEBUTTONUP:
@@ -129,6 +140,7 @@ class ApplicationWindow:
 
             # if mousebutton is dragging
             if event.type == pg.MOUSEMOTION and self.is_dragging:
+
                 x, y = pg.mouse.get_pos()
                 # normalize click position to fit the coordinate keys
                 x = (x // self.blocksize) * self.blocksize
@@ -136,23 +148,23 @@ class ApplicationWindow:
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is wall pass in dragging mode
-                if clicked_block == WALL_BLOCK:
+                if clicked_block == BlockColors.black.value:
                     pass
 
                 # clicked block is already declared as start / goal block, turn it into wall
-                elif clicked_block == START_BLOCK:
+                elif clicked_block == BlockColors.purple.value:
                     self.start_block_set = False
                     self.start_and_end_block_set = False
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
                 # clicked block is declared as end block
-                elif clicked_block == DESTINATION_BLOCK:
+                elif clicked_block == BlockColors.red.value:
                     self.start_and_end_block_set = False
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
                 # empty block, set up wall
                 else:
-                    self.block_map.final_map[(x, y)] = WALL_BLOCK
+                    self.block_map.final_map[(x, y)] = BlockColors.black.value
 
             # right click to set start and end point
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 3:
@@ -163,23 +175,23 @@ class ApplicationWindow:
                 clicked_block = self.block_map.final_map[(x, y)]
 
                 # clicked block is declared as start block and will be turned into empty block
-                if clicked_block == START_BLOCK:
-                    self.block_map.final_map[(x, y)] = EMPTY_BLOCK
+                if clicked_block == BlockColors.purple.value:
+                    self.block_map.final_map[(x, y)] = BlockColors.white.value
                     self.start_block_set = False
 
                 # no start block is set
-                elif clicked_block == EMPTY_BLOCK and not self.start_block_set:
-                    self.block_map.final_map[(x, y)] = START_BLOCK
+                elif clicked_block == BlockColors.white.value and not self.start_block_set:
+                    self.block_map.final_map[(x, y)] = BlockColors.purple.value
                     self.start_block_set = True
 
                 # clicked block is empty block, start block is declared and end block is missing
-                elif clicked_block == EMPTY_BLOCK and self.start_block_set and not self.start_and_end_block_set:
-                    self.block_map.final_map[(x, y)] = DESTINATION_BLOCK
+                elif clicked_block == BlockColors.white.value and self.start_block_set and not self.start_and_end_block_set:
+                    self.block_map.final_map[(x, y)] = BlockColors.red.value
                     self.start_and_end_block_set = True
 
                 # clicked block is declared as end block
-                elif clicked_block == DESTINATION_BLOCK:
-                    self.block_map.final_map[(x, y)] = EMPTY_BLOCK
+                elif clicked_block == BlockColors.red.value:
+                    self.block_map.final_map[(x, y)] = BlockColors.white.value
                     self.start_and_end_block_set = False
 
     def update(self) -> None:
@@ -193,14 +205,18 @@ class ApplicationWindow:
 
         if self.search_started and not self.algorithm_initialized:
             start, end = self.block_map.get_start_destination_points()
-
             self.search_algorithm.initialize_start_coordinates(start)
             self.search_algorithm.initialize_destination_coordinates(end)
-            self.search_algorithm.perform_search()
+            if isinstance(self.search_algorithm, Dfs):
+                next_block = None
+            else:
+                next_block = self.search_algorithm.get_next_block()
+            self.search_algorithm.perform_search(next_block=next_block)
             self.algorithm_initialized = True
 
         elif self.algorithm_initialized:
-            self.search_algorithm.perform_search()
+            next_block = self.search_algorithm.get_next_block()
+            self.search_algorithm.perform_search(next_block= next_block)
 
-        else:
-            pass
+    def show_no_way(self) -> None:
+        self.block_map.end_search_bc_no_way()
