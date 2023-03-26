@@ -1,10 +1,13 @@
 # Search and Pathfinding Algorithms visualized
 
 ---
-### To-Do´s
-- Implement Djikstras algorithm
+### To-Do
+- Implement Djikstra-pathfinding algorithm
 - Refine closing behaviour of pygame screen
+- implement restart functionality
 - Improve run function from control interface
+- Improve overall code-structure
+- Refactor event-codeblock in application window
 
 ---
 ## Table of content
