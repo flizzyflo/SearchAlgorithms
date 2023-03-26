@@ -1,25 +1,23 @@
+from enum import Enum
+
 RESOLUTION = WIDTH, HEIGHT = 600, 600
 
 BLOCKSIZE: int = 10
 FRAMERATE: int = 60
 TITLE: str = "Search- & pathfinding algorithms visualized"
 
-WALL_BORDER_COLOR: str = "white"
-START_COLOR: str = "orange"
-GOAL_COLOR: str = "red"
-EMPTY_COLOR: str = "white"
-VISITED_COLOR: str = "lightblue"
-BACKGROUND_COLOR: str = "black"  # wall color as well, since walls are small squaires which are transparent
-SHORTEST_PATH_COLOR: str = "green"
-SELECTED_BLOCK_COLOR: str = "blue"
 
-WALL_BLOCK: int = 1
-EMPTY_BLOCK: int = 0
-START_BLOCK: int = 2
-DESTINATION_BLOCK: int = 3
-VISITED_BLOCK: int = 4
-SHORTEST_PATH: int = 5
-SELECTED_BLOCK: int = 6
+class BlockColors(Enum):
+    black = 1  # background color
+    white = 0  # empty block
+    purple = 2  # start block
+    red = 3  # destination block
+    lightblue = 4  # visited block
+    green = 5  # shortest path
+    blue = 6  # selected block
+    DARK_RED = 5
+    yellow = 8  # current block
+
 
 INFORMATION_FRAME_TEXT = """User-Manual:
 \n1. Set screen size
