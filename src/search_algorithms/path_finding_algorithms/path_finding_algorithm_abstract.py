@@ -5,13 +5,8 @@ from abc import ABC, abstractmethod
 
 class PathfindingAlgorithm(SearchAlgorithm, ABC):
     def __init__(self, *, map_structure: MapStructure) -> None:
-        super().__init__(map_structure= map_structure)
+        super().__init__(map_structure=map_structure)
 
     @abstractmethod
-    def perform_search(self) -> None:
+    def backtrack_path(self, current_coordinates: tuple[int, int], node_list: list = list()) -> list[tuple[int, int]]:
         pass
-
-    @abstractmethod
-    def initialize_start_coordinates(self, start_coordinates: tuple[int, int]) -> None:
-        pass
-
