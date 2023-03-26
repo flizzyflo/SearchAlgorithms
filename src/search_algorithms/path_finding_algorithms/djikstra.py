@@ -14,7 +14,7 @@ class Djikstra(PathfindingAlgorithm):
     def perform_search(self) -> None:
         pass
 
-    def initialize_destination_coordinates(self, goal_coordinates: tuple[int, int]) -> None:
+    def initialize_destination_coordinates(self, destination_coordinates: tuple[int, int]) -> None:
         pass
 
     def initialize_start_coordinates(self, start_coordinates: tuple[int, int]) -> None:
