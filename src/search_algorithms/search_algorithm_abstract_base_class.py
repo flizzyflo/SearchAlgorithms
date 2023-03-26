@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
 from src.map_structure.map_structure import MapStructure
-from src.settings.settings import WALL_BLOCK
+from src.search_algorithms.path_finding_algorithms.node import Node
+from src.settings.settings import BlockColors
 
 
 class SearchAlgorithm(ABC):
@@ -19,32 +20,76 @@ class SearchAlgorithm(ABC):
         self.blocksize: int = self.map_structure.get_blocksize()
 
     @abstractmethod
-    def perform_search(self) -> None:
+    def get_next_block(self) -> tuple[int, int] | Node:
+
         """
-        Performs the specific implementation of the search algorithm
+        This method is used to get the next block which should be investigated by the specific search
+        algorithm selected.
+        Returns
+        -------
+        Tuple of coordinates
         """
 
         ...
 
-    def initialize_destination_coordinates(self, goal_coordinates: tuple[int, int]) -> None:
-        self.destination_coordinates = goal_coordinates
+    @abstractmethod
+    def perform_search(self, next_block: tuple[int, int] | Node) -> None:
+        """
+        Performs the specific implementation of the search algorithm. Takes the next
+        block which should be investigated as an argument, either as tuple of its coordinates (Bfs, Dfs) or
+        as Node object (A*, Djikstra)
+        """
+
+        ...
+
+    def initialize_destination_coordinates(self, destination_coordinates: tuple[int, int]) -> None:
+
+        """
+        Initializes the destination coordinates into the search algorithm instance
+        Parameters
+        ----------
+        destination_coordinates: tuple of coordinates of the specific destination marked within the UI
+
+        Returns
+        -------
+        None
+        """
+
+        self.destination_coordinates = destination_coordinates
 
     @abstractmethod
     def initialize_start_coordinates(self, start_coordinates: tuple[int, int]) -> None:
+
+        """
+        Initializes the start coordinates as a parameter of the search-algorithm instance.
+        Also puts the start coordinates into the respective data structure of the algorithm to be able to start
+        the algorithm.
+        Parameters
+        ----------
+        start_coordinates: tuple of coordinates of the starting point for the search to be performed
+
+        Returns
+        -------
+        None
+        """
         ...
 
     def is_no_wall(self, block_coordinates: tuple[int, int]) -> bool:
         """
-        Checks whether a coordinate passed in is a wall or not and returns either true or false
+        Checks whether a coordinate passed in is a wall or not
+        Returns
+        -------
+        True - No wall
+        False - is Wall
         """
 
         try:
-            return self.map_structure.final_map[block_coordinates] != WALL_BLOCK
+            return self.map_structure.final_map[block_coordinates] != BlockColors.black.value
 
         except KeyError as ke:
             # Key does not exist within final map -> out of bounds, cant be a wall, return false
             # will be catched by is_in_bounds method
-            False
+            return False
 
     def is_valid_coordinate(self, block_coordinates: tuple[int, int]) -> bool:
         """
@@ -70,8 +115,8 @@ class SearchAlgorithm(ABC):
         """
         Checks if no way can be found. Returns either true or false
         Returns
-        true - no way exists
-        false - way exists
+        True - no way exists
+        False - way exists
         -------
         """
 
@@ -87,8 +132,8 @@ class SearchAlgorithm(ABC):
 
         Returns
         -------
-        true - block was visited
-        false - block was not visited
+        True - block was visited
+        False - block was not visited
         """
 
         return block_coordinates in self.is_visited
@@ -99,15 +144,15 @@ class SearchAlgorithm(ABC):
         Wrapper function to check whether the search is over or not. Returns any true value out of
         goal_found or no_way_found methods. Since when one of them is true, the search is over.
         Returns
-        true - search is over
-        false - continue search
+        True - search is over
+        False - continue search
         -------
 
         """
 
         return any([self.destination_detected, self.no_way_found])
 
-    def visited_this_block(self, block_coordinates: tuple[int, int]) -> None:
+    def visited_this_block(self, *, block_coordinates: tuple[int, int]) -> None:
 
         """
         Adds the block coordinates passed in into the is_visited set
@@ -116,11 +161,50 @@ class SearchAlgorithm(ABC):
         self.is_visited.add(block_coordinates)
 
     def is_destination(self, block_coordinates: tuple[int, int]) -> bool:
+
         """
-        Returns if the desired destination block is found
+        Checks whether the block passed in as argument is the destination or not
+
+        Parameters
+        ----------
+        block_coordinates: Tuple of coordinates of the block to be inspected
+
+        Returns
+        ----------
+        True - block is destination block
+        False - block is not destination block
         """
 
         return block_coordinates == self.destination_coordinates
 
     def destination_found(self) -> bool:
+
+        """
+        Method to check the current status of whether the destination is already found or not.
+        Returns
+        -------
+        True - destination is already found
+        False - destination is not found
+
+        """
+
         return self.destination_detected
+
+    def change_block_color(self, block_coordinates: tuple[int, int], desired_block_color: int) -> None:
+
+        """
+        Method to change the block value stored in the map object. This is used to determine the color of the block
+        Parameters
+        ----------
+        block_coordinates: passed in as tuple, coordinates of the block which color should be changed
+        desired_block_color: block color as integer value
+
+        Returns
+        -------
+
+        """
+
+        if self.current_coordinates == self.start_coordinates:
+            pass
+        else:
+            self.map_structure.final_map[block_coordinates] = desired_block_color
