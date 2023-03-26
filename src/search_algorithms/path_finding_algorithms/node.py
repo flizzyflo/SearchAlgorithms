@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Self
 
 
@@ -9,12 +8,14 @@ class Node:
     def __init__(self, *,
                  coordinates: tuple[int, int],
                  predecessor_coordinates: tuple[int, int] = None,
+                 successor_coordinates: tuple[int, int] = None,
                  g_value: int = 0,
                  h_value: int = 0,
                  f_value: int = 0):
 
         self.coordinates: tuple[int, int] = coordinates
         self.predecessor_coordinates: tuple[int, int] = predecessor_coordinates
+        self.successor_coordinates: tuple[int, int] = successor_coordinates
         self.g_value: int = g_value  # distance cost of node
         self.h_value: int = h_value  # heuristic estimated cost of node
         self.f_value: int = f_value  # total cost of node (g + h)
@@ -27,8 +28,14 @@ class Node:
     def get_predecessor_coordinates(self) -> tuple[int, int]:
         return self.predecessor_coordinates
 
-    def set_predecessor_coordinates(self, predecessor_coordinates: tuple[int, int]) -> None:
+    def set_predecessor_coordinates_to(self, predecessor_coordinates: tuple[int, int]) -> None:
         self.predecessor_coordinates = predecessor_coordinates
+
+    def get_successor_coordinates(self) -> tuple[int, int]:
+        return self.successor_coordinates
+
+    def set_successor_coordinates_to(self, successor_coordinates: tuple[int, int]) -> None:
+        self.successor_coordinates = successor_coordinates
 
     def get_real_distance_travel_costs(self) -> int:
         return self.g_value
