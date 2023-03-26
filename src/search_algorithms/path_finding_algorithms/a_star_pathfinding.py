@@ -3,7 +3,7 @@ from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstra
 from src.search_algorithms.path_finding_algorithms.node import Node
 from queue import PriorityQueue
 
-from src.settings.settings import VISITED_BLOCK, SELECTED_BLOCK
+from src.settings.settings import BlockColors
 
 
 class AStarPathfinding(PathfindingAlgorithm):
@@ -19,12 +19,15 @@ class AStarPathfinding(PathfindingAlgorithm):
         self.open_list: PriorityQueue = PriorityQueue()
         # closed list is stored in 'is visited' set (is inherited)
 
-    def perform_search(self) -> None:
+    def get_next_block(self) -> tuple[int, int] | Node:
+        return self.open_list.get()
+
+    def perform_search(self, next_block: tuple[int, int] | Node) -> None:
 
         if self.open_list.empty():
             self.no_way_found = True
 
-        current_node: Node = self.open_list.get()
+        current_node: Node = next_block
         current_block_x, current_block_y = current_node.coordinates
         self.current_coordinates = (current_block_x, current_block_y)
 
@@ -44,35 +47,39 @@ class AStarPathfinding(PathfindingAlgorithm):
         # current block is set as visited
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
+        # grab right neighbour
         if self.is_valid_coordinate(block_coordinates=(current_block_x + self.blocksize, current_block_y)):
             neighbour_block = (current_block_x + self.blocksize, current_block_y)
 
             if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
-                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+                self.map_structure.final_map[neighbour_block] = BlockColors.blue.value
 
             self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
+        # grab left neighbour
         if self.is_valid_coordinate(block_coordinates=(current_block_x - self.blocksize, current_block_y)):
             neighbour_block = (current_block_x - self.blocksize, current_block_y)
 
             if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
-                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+                self.map_structure.final_map[neighbour_block] = BlockColors.blue.value
 
             self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
+        # grab lower neighbour
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - self.blocksize)):
             neighbour_block = (current_block_x, current_block_y - self.blocksize)
 
             if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
-                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+                self.map_structure.final_map[neighbour_block] = BlockColors.blue.value
 
             self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
+        # grab upper neighbour
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + self.blocksize)):
             neighbour_block = (current_block_x, current_block_y + self.blocksize)
 
             if not self.already_visited_block(block_coordinates=neighbour_block) and (neighbour_block != self.destination_coordinates):
-                self.map_structure.final_map[neighbour_block] = SELECTED_BLOCK
+                self.map_structure.final_map[neighbour_block] = BlockColors.blue.value
 
             self.evaluate_successor_node(successor_coordinates=neighbour_block)
 
@@ -83,7 +90,7 @@ class AStarPathfinding(PathfindingAlgorithm):
             pass
 
         else:
-            self.map_structure.final_map[self.current_coordinates] = VISITED_BLOCK
+            self.map_structure.final_map[self.current_coordinates] = BlockColors.lightblue.value
 
     def evaluate_successor_node(self, successor_coordinates: tuple[int, int]) -> None:
 
@@ -156,16 +163,13 @@ class AStarPathfinding(PathfindingAlgorithm):
         self.start_coordinates = start_node.coordinates
         start_node.enqueued = True
 
-    def backtrack_from_destination_to_start(self,
-                                            current_coordinates: tuple[int, int],
-                                            node_list: list = list()) -> list[tuple[int, int]]:
+    def backtrack_path(self, current_coordinates: tuple[int, int], node_list: list = list()) -> list[tuple[int, int]]:
 
         node_list.append(current_coordinates)
-        while True:
 
-            if Node.all_nodes[current_coordinates].get_predecessor_coordinates() is None:
-                return node_list
+        # checks if current node is starting node, which has no predecessor. thus, backtracking is finished, return list
+        if Node.all_nodes[current_coordinates].get_predecessor_coordinates() is None:
+            return node_list
 
-            return self.backtrack_from_destination_to_start(current_coordinates=Node.all_nodes[current_coordinates].get_predecessor_coordinates(),
-                                                            node_list=node_list)
-
+        return self.backtrack_path(current_coordinates=Node.all_nodes[current_coordinates].get_predecessor_coordinates(),
+                                   node_list=node_list)

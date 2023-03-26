@@ -1,6 +1,6 @@
 from src.map_structure.map_structure import MapStructure
 from src.search_algorithms.search_algorithm_abstract_base_class import SearchAlgorithm
-from src.settings.settings import VISITED_BLOCK
+from src.settings.settings import BlockColors
 
 
 class Dfs(SearchAlgorithm):
@@ -13,7 +13,10 @@ class Dfs(SearchAlgorithm):
         self.start_coordinates = start_coordinates
         self.stack.append(start_coordinates)
 
-    def perform_search(self) -> None:
+    def get_next_block(self) -> tuple[int, int]:
+        return self.stack.pop()
+
+    def perform_search(self, next_block: tuple[int, int] = None) -> None:
 
         # goal was not found
         if not self.stack:
@@ -21,7 +24,11 @@ class Dfs(SearchAlgorithm):
             return
 
         # get next block to visit
-        current_block_x, current_block_y = self.stack.pop()
+        if next_block is None:
+            current_block_x, current_block_y = self.get_next_block()
+
+        else:
+            current_block_x, current_block_y = next_block
         self.current_coordinates = (current_block_x, current_block_y)
 
         # check block was already visited, will be skipped
@@ -37,24 +44,36 @@ class Dfs(SearchAlgorithm):
         # blocksize is the step-length to take to get to the neighbour
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y - self.blocksize)):
-            self.stack.append((current_block_x, current_block_y - self.blocksize))
+            neighbour_block = (current_block_x, current_block_y - self.blocksize)
+            if not self.already_visited_block(block_coordinates=neighbour_block):
+                self.change_block_color(block_coordinates=neighbour_block,
+                                        desired_block_color=BlockColors.blue.value)
+                self.stack.append(neighbour_block)
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x - self.blocksize, current_block_y)):
-            self.stack.append((current_block_x - self.blocksize, current_block_y))
+            neighbour_block = (current_block_x - self.blocksize, current_block_y)
+            if not self.already_visited_block(block_coordinates=neighbour_block):
+                self.change_block_color(block_coordinates=neighbour_block,
+                                        desired_block_color=BlockColors.blue.value)
+                self.stack.append(neighbour_block)
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x, current_block_y + self.blocksize)):
-            self.stack.append((current_block_x, current_block_y + self.blocksize))
+            neighbour_block = (current_block_x, current_block_y + self.blocksize)
+            if not self.already_visited_block(block_coordinates=neighbour_block):
+                self.change_block_color(block_coordinates=neighbour_block,
+                                        desired_block_color=BlockColors.blue.value)
+                self.stack.append(neighbour_block)
 
         if self.is_valid_coordinate(block_coordinates=(current_block_x + self.blocksize, current_block_y)):
-            self.stack.append((current_block_x + self.blocksize, current_block_y))
+            neighbour_block = (current_block_x + self.blocksize, current_block_y)
+            if not self.already_visited_block(block_coordinates=neighbour_block):
+                self.change_block_color(block_coordinates=neighbour_block,
+                                        desired_block_color=BlockColors.blue.value)
+                self.stack.append(neighbour_block)
 
         self.visited_this_block(block_coordinates=self.current_coordinates)
 
-        # change values within the map structure for colorizing.
-        # if current position is start position, then it should not be colorized
-        if self.current_coordinates == self.start_coordinates:
-            pass
-
-        else:
-            # change map value to 'visited' to change color
-            self.map_structure.final_map[self.current_coordinates] = VISITED_BLOCK
+        self.change_block_color(block_coordinates=self.current_coordinates,
+                                desired_block_color=BlockColors.lightblue.value)
+        self.change_block_color(block_coordinates=self.destination_coordinates,
+                                desired_block_color=BlockColors.red.value)
