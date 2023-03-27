@@ -21,7 +21,6 @@ class MapStructure:
     def get_blocksize(self) -> int:
         return self.blocksize
 
-
     def get_height(self) -> int:
 
         """
