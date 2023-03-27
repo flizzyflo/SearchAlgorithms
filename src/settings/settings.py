@@ -1,11 +1,5 @@
 from enum import Enum
 
-RESOLUTION = WIDTH, HEIGHT = 600, 600
-
-BLOCKSIZE: int = 10
-FRAMERATE: int = 60
-TITLE: str = "Search- & pathfinding algorithms visualized"
-
 
 class BlockColors(Enum):
     black = 1  # background color
@@ -17,6 +11,14 @@ class BlockColors(Enum):
     blue = 6  # selected block
     DARK_RED = 5
     yellow = 8  # current block
+
+
+RESOLUTION = WIDTH, HEIGHT = 600, 600
+
+BLOCKSIZE: int = 10
+FRAMERATE: int = 60
+TITLE: str = "Search- & pathfinding algorithms visualized"
+
 
 
 INFORMATION_FRAME_TEXT = """User-Manual:
