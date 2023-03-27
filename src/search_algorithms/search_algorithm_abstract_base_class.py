@@ -33,7 +33,8 @@ class SearchAlgorithm(ABC):
         ...
 
     @abstractmethod
-    def perform_search(self, next_block: tuple[int, int] | Node) -> None:
+    def perform_search(self, current_block_to_investigate: tuple[int, int] | Node) -> None:
+
         """
         Performs the specific implementation of the search algorithm. Takes the next
         block which should be investigated as an argument, either as tuple of its coordinates (Bfs, Dfs) or
@@ -75,6 +76,7 @@ class SearchAlgorithm(ABC):
         ...
 
     def is_no_wall(self, block_coordinates: tuple[int, int]) -> bool:
+
         """
         Checks whether a coordinate passed in is a wall or not
         Returns
@@ -92,6 +94,7 @@ class SearchAlgorithm(ABC):
             return False
 
     def is_valid_coordinate(self, block_coordinates: tuple[int, int]) -> bool:
+
         """
         Wrapper method. Returns true if coordinates are no wall and are in bounds.
         """
@@ -190,14 +193,14 @@ class SearchAlgorithm(ABC):
 
         return self.destination_detected
 
-    def change_block_color(self, block_coordinates: tuple[int, int], desired_block_color: int) -> None:
+    def change_block_color(self, block_coordinates: tuple[int, int], desired_block_color_value: int) -> None:
 
         """
         Method to change the block value stored in the map object. This is used to determine the color of the block
         Parameters
         ----------
         block_coordinates: passed in as tuple, coordinates of the block which color should be changed
-        desired_block_color: block color as integer value
+        desired_block_color_value: block color as integer value
 
         Returns
         -------
@@ -207,4 +210,4 @@ class SearchAlgorithm(ABC):
         if self.current_coordinates == self.start_coordinates:
             pass
         else:
-            self.map_structure.final_map[block_coordinates] = desired_block_color
+            self.map_structure.final_map[block_coordinates] = desired_block_color_value
