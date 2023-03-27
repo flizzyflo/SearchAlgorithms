@@ -1,8 +1,9 @@
-from src.map_structure.map_structure import MapStructure
-from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstract import PathfindingAlgorithm
-from src.search_algorithms.path_finding_algorithms.node import Node
 from queue import PriorityQueue
+from typing import Callable
 
+from src.map_structure.map_structure import MapStructure
+from src.search_algorithms.path_finding_algorithms.node import Node
+from src.search_algorithms.path_finding_algorithms.path_finding_algorithm_abstract import PathfindingAlgorithm
 from src.settings.settings import BlockColors
 
 
@@ -12,8 +13,13 @@ class AStarPathfinding(PathfindingAlgorithm):
     Class to find path between two points using the A* algorithm.
     """
 
-    def __init__(self, *, map_structure: MapStructure) -> None:
+    def __init__(self, *, map_structure: MapStructure, distance_heuristic: Callable = None) -> None:
         super().__init__(map_structure=map_structure)
+
+        if distance_heuristic is None:
+            self.distance_heuristic = self.calculate_heuristic_distance
+        else:
+            self.distance_heuristic = distance_heuristic
 
         # store node and f-value in ordered way, minimum value first
         self.open_list: PriorityQueue = PriorityQueue()
@@ -22,12 +28,12 @@ class AStarPathfinding(PathfindingAlgorithm):
     def get_next_block(self) -> tuple[int, int] | Node:
         return self.open_list.get()
 
-    def perform_search(self, next_block: tuple[int, int] | Node) -> None:
+    def perform_search(self, current_block_to_investigate: tuple[int, int] | Node) -> None:
 
         if self.open_list.empty():
             self.no_way_found = True
 
-        current_node: Node = next_block
+        current_node: Node = current_block_to_investigate
         current_block_x, current_block_y = current_node.coordinates
         self.current_coordinates = (current_block_x, current_block_y)
 
@@ -115,7 +121,7 @@ class AStarPathfinding(PathfindingAlgorithm):
         successor_node.set_real_distance_travel_costs_to(g_value=real_distance_travel_costs)
 
         # calculate estimated distance from successor node to destination node based on heuristic
-        heuristic_travel_costs = self.calculate_heuristic_distance(successor_coordinates=successor_coordinates)
+        heuristic_travel_costs = self.distance_heuristic(successor_coordinates=successor_coordinates)
         successor_node.set_heuristic_travel_costs_to(h_value=heuristic_travel_costs)
 
         # sum up real costs from current node to successor and estimated cost from successor to destination
@@ -150,6 +156,20 @@ class AStarPathfinding(PathfindingAlgorithm):
                                              b=(successor_coordinates[1] - self.destination_coordinates[1]))
 
     def calculate_pythagoras(self, a: int, b: int) -> int:
+
+        """
+        Pythagorean calculation of sides of a triangle. Takes two side lengths as integer inputs, returns
+        the third one. Equals a ** 2 + b ** 2 = c ** 2
+        Parameters
+        ----------
+        a: Integer value representing the lenght of one side of the triangle
+        b: Integer value representing the lenght of one side of the triangle
+
+        Returns
+        -------
+        c: Integer value representing the third side of the triangle
+        """
+
         a: int = a ** 2
         b: int = b ** 2
         return int((a + b) ** 0.5)
